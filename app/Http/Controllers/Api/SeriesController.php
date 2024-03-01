@@ -25,8 +25,12 @@ class SeriesController extends Controller
 
     public function store(SeriesFormRequest $request)
     {
-      $coverPath = $request->input('cover');
-      $coverPath = str_replace("\\", "/", $coverPath);
+        if($request->hasFile('cover')){
+            $coverPath = $request->file('cover')->store('series_cover', 'public');
+            $request->coverPath = $coverPath;
+        }else{
+            $request->coverPath = 'series_cover/default/no-cover.jpg';
+        }
 
       return response()->json($this->seriesRepository->add($request), 201);
     }
@@ -68,7 +72,7 @@ class SeriesController extends Controller
         return $seriesModel;
     }
 
-    public function upload(SeriesFormRequest $request)
+    public function upload(Request $request)
     {
 
         $coverPath = null;
